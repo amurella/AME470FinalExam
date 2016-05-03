@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Snazzy Maps Super Simple Example</title>
+        <script src="script.js"></script>
+        <script src='jquery-2.2.1.min.js' type='text/javascript'> </script>
+        <style type="text/css">
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+/* Dropdown Button */
+.dropbtn {
+    background-color: blue;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    width: 1400px;
+}
+
+#textbox{
+    background-color: blue;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    width: 1400px;
+}
+
+/* Dropdown button on hover & focus */
+.dropbtn:hover, .dropbtn:focus {
+    background-color: teal;
+}
+
+
+#floating-panel {
+    position: relative;
+    display: inline-block;
+     width: 1400px;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 125px;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    text-align: center;
+    min-width: 1400px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+.show {display:block;}
+            /* Set a size for our map container, the Google Map will take up 100% of this container */
+            #map {
+                width: 500px;
+                height: 500px;
+            }
+        </style>
+        
+        <!-- 
+            You need to include this script tag on any page that has a Google Map.
+
+            The following script tag will work when opening this example locally on your computer.
+            But if you use this on a localhost server or a live website you will need to include an API key. 
+            Sign up for one here (it's free for small usage): 
+                https://developers.google.com/maps/documentation/javascript/tutorial#api_key
+
+            After you sign up, use the following script tag with YOUR_GOOGLE_API_KEY replaced with your actual key.
+                <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_API_KEY&sensor=false"></script>
+        -->
+        <script type="text/javascript" src="https://snazzymaps.com/explore.json?key=a29119a4-3633-46e0-8365-170caee86004&sensor=false"></script>
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+        
+        <script type="text/javascript">
+        var dropdown = [];
+        var jsonName = [];
+        var style;
+
+        function myFunction() 
+        {
+            //dropdown = [];
+            var url = "./getStyles?link=https://snazzymaps.com/explore.json?key=a29119a4-3633-46e0-8365-170caee86004&sensor=false";
+            //console.log("HELLO" + url);
+            //  <select id="dropdown-select" name="dropdown"> </select>
+            loadURL(url, function(data) {
+                style = JSON.parse(data);
+                //console.log(style);
+                var styleNumber = style.styles.length;
+                //console.log(styleNumber);
+                for(var i = 0; i < styleNumber; i++)
+                {
+                    //console.log("uhhhh");
+                     dropdown[i] = style.styles[i].name;//JSON.stringify(style.styles[0].name);
+                     jsonName[i] = style.styles[i].json;
+                     // dropdown.push(("<a href = "#"" + JSON.stringify(style.styles[i].name)));
+                    
+                
+                   //document.getElementsByClassName("dropdown-content").value += style.styles[i].name;
+                    //document.getElementById("myDIV").className = "mystyle";
+                     $('<option value="'+ style.styles[i].name +'">' + style.styles[i].name+ '</option>').appendTo('#dropdown-select');
+
+                     //console.log(jsonName[i]);
+                    // var newDiv = document.createElement('div');
+                    // var html = '<select>';
+                    // html == "<option value= '" + style.styles[i].name + "'>" + style.styles[i].name + "</option>";
+                    // html += '</select>';
+                    // newDiv.innerHTML = html;
+                    // document.getElementById("myDropdown").appendChild(newDiv);
+                }
+            // });
+            //document.getElementById("myDropdown").classList.toggle("show");
+        });
+}
+       // Close the dropdown menu if the user clicks outside of it
+        window.onclick = function(event) 
+        {
+          if (!event.target.matches("dropdown")) 
+          {
+            var dropdowns = document.getElementById("dropdown-select");
+            var i;
+            for (i = 0; i < dropdowns.length; i++) 
+            {
+              var openDropdown = dropdowns[i];
+              if (openDropdown.classList.contains('show')) 
+              {
+                openDropdown.classList.remove('show');
+              }
+            }
+          }
+        }
+
+       /* window.onclick = function(event)
+        {
+            if(!event.target.matches("dropdown"))
+            {
+                initMap();
+               //google.maps.event.addDomListener(window, 'load', init);  
+            }
+        }*/
+
+        //onclick vs. onload
+        function drawMap(resultsMap)
+        {
+            console.log(jsonName[document.getElementById("dropdown-select").selectedIndex]);
+
+             var mapOptions = {
+                zoom: 8,
+                center: {lat: -34.397, lng: 150.644},
+                styles: jsonName[document.getElementById("dropdown-select").selectedIndex]
+
+                //styles: jsonName[document.getElementById("dropdown-select").selectedIndex]
+                //console.log(style.styles[0].json);
+                //get selected value and then call styles[i].json
+            };
+            var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+             console.log("HELLLO" + document.getElementById("dropdown-select").selectedIndex);
+        }
+         google.maps.event.addDomListener(window, 'load', initMap);
+        function initMap() 
+        {
+
+
+           document.getElementById('dropdown-select').addEventListener('click', function() {
+                drawMap(map);
+            });
+            
+           
+            /*{
+                zoom: 8,
+                center: {lat: -34.397, lng: 150.644}
+              // document.getElementById("dropdown-select").selectedIndex;
+                //console.log(style.styles[0].json);
+                //get selected value and then call styles[i].json
+            });*/
+
+           /* var map = new google.maps.Map(document.getElementById('map'), {
+              zoom: 8,
+              center: {lat: -34.397, lng: 150.644},
+              styles: jsonName[document.getElementById("dropdown-select").selectedIndex]
+            });*/
+            var geocoder = new google.maps.Geocoder();
+
+            document.getElementById('geocode').addEventListener('click', function() {
+              geocodeAddress(geocoder, map);
+            });
+
+               google.maps.Map(map);
+
+                // Let's also add a marker while we're at it
+                /*var marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(40.6700, -73.9400),
+                    map: map,
+                    title: 'Snazzy!'
+                });*/
+      }
+
+      function geocodeAddress(geocoder, resultsMap) {
+           // initMap();
+        var address = document.getElementById('address').value;
+        geocoder.geocode({'address': address}, function(results, status) {
+          if (status === google.maps.GeocoderStatus.OK) {
+            resultsMap.setCenter(results[0].geometry.location);
+            var marker = new google.maps.Marker({
+              map: resultsMap,
+              position: results[0].geometry.location
+            });
+          } else {
+            alert('Geocode was not successful for the following reason: ' + status);
+          }
+        });
+      }
+            // When the window has finished loading create our google map below
+            
+
+
+
+        </script>
+    </head>
+    <body onload = 'myFunction()'>
+        <div id="floating-panel">
+      <input id="address" type="textbox" value="Enter Address" style="float: left; color: blue">
+      <input id="geocode" type="button" value="Geocode" style="float: left; color: blue">
+    </div>
+       <!--  <div class="dropdown">
+        <button onclick="myFunction()" class="dropbtn">Select Map Style</button>
+            <div id="myDropdown"> -->
+        <select id="dropdown-select" name="dropdown" style: "float: left; color: blue"></select>
+
+        </div>
+        </div>
+         
+        <!-- The element that will contain our Google Map. This is used in both the Javascript and CSS above. -->
+        <div id="map"></div>
+    </body>
+</html>
